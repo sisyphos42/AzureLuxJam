@@ -113,6 +113,7 @@ namespace UnityTemplateProjects
             lookAction.Enable();
             verticalMovementAction.Enable();
             boostFactorAction.Enable();
+            Debug.Log("I start");
         }
 #endif
 
@@ -134,6 +135,7 @@ namespace UnityTemplateProjects
             if (Input.GetKey(KeyCode.W))
             {
                 direction += Vector3.forward;
+                Debug.Log("w");
             }
             if (Input.GetKey(KeyCode.S))
             {
@@ -162,6 +164,21 @@ namespace UnityTemplateProjects
         void Update()
         {
             // Exit Sample  
+
+            if (Input.GetKey(KeyCode.A)) {
+                transform.Rotate(Vector3.up, Space.World);
+                transform.position = Quaternion.Euler(0, 1, 0) * transform.position;
+            }
+            if (Input.GetKey(KeyCode.D)) {
+                transform.Rotate(Vector3.down, Space.World);
+                transform.position = Quaternion.Euler(0, -1, 0) * transform.position;
+            }
+
+            // Debug.Log(Input.mouseScrollDelta);
+
+            transform.position *= (1 - Input.mouseScrollDelta.y*0.05f);
+
+            return;
 
             if (IsEscapePressed())
             {

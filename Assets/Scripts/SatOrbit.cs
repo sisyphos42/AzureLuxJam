@@ -11,11 +11,20 @@ public class SatOrbit : MonoBehaviour
 
     float phi, theta;
 
+    public int i, j;
+
+    [SerializeField]
+    Material mat;
+
+    public bool infected = false;
+    bool coll = false;
+
     // Start is called before the first frame update
     void Start()
     {
         phi = 0;
         theta = 0;
+        //Debug.Log("start");
     }
 
     // Update is called once per frame
@@ -28,6 +37,28 @@ public class SatOrbit : MonoBehaviour
         
         transform.position =  altitude * (Quaternion.FromToRotation(Vector3.up, plane) * Quaternion.Euler(0, -Mathf.Rad2Deg * (phase + phi), 0) * Vector3.right);
 
-        phi += 0.0001f;
+        phi += 0.0002f;
+
+        coll = true;
+    }
+
+    void OnCollisionEnter(Collision collision) {
+        Debug.Log(collision);
+    }
+
+    void OnTriggerStay(Collider other) {
+        if (!coll) return;
+        if (!infected) return;
+
+        //Debug.Log(other);
+        //Debug.Log(i.ToString() + " " + j.ToString() + " " + other.GetComponent<SatOrbit>().i.ToString() + " " + other.GetComponent<SatOrbit>().j.ToString());
+        //GetComponent<Renderer>().material = mat;
+        SatOrbit so = other.GetComponent<SatOrbit>();
+        if (!so.infected) {
+            so.infected = true;
+            other.GetComponent<Renderer>().material = mat;
+            Rigidbody rb = other.gameObject.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+        }
     }
 }
