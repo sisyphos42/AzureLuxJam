@@ -78,6 +78,7 @@ namespace UnityTemplateProjects
         float theta = 0;
         [SerializeField]
         float distance = 2.5f;
+        Vector3 _mousePos;
 
 #if ENABLE_INPUT_SYSTEM
         InputAction movementAction;
@@ -187,6 +188,17 @@ namespace UnityTemplateProjects
 
             if (Input.GetKey(KeyCode.S)) {
                     theta -= 1f;
+            }
+
+            if (Input.GetMouseButtonDown(1)) {
+                _mousePos = Input.mousePosition;
+            }
+
+            if (Input.GetMouseButton(1)) {
+                Vector3 dm = Input.mousePosition - _mousePos;
+                phi -= dm.x * 0.05f * distance;
+                theta -= dm.y * 0.05f * distance;
+                _mousePos = Input.mousePosition;
             }
 
             theta = Mathf.Clamp(theta, -60, 60);

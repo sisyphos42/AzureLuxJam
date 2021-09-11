@@ -30,7 +30,7 @@ public class SatSpawner : MonoBehaviour
                 sat.transform.parent = transform;
                 SatOrbit so = sat.GetComponent<SatOrbit>();
                 so.plane = Quaternion.Euler(0, j * 9, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
-                so.phase = Mathf.Deg2Rad * 360 * i/Ni;
+                so.phase = Mathf.Deg2Rad * ((360 * i/Ni) + 180);
                 so.altitude = altitude;
 
                 so.i = i;
