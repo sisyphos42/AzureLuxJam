@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 574536642533490335}
   m_Layer: 6
   m_Name: Satellite
-  m_TagString: Untagged
+  m_TagString: Satellite
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -95,10 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf330ee4203b8944fb3b0ed3ecab9100, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 5
   altitude: 1.5
-  sa: 0
-  sb: 0
-  sc: 0
   plane: {x: 0, y: 0, z: 0}
   phase: 0
   i: 0
@@ -116,5 +114,5 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 5
+  m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}

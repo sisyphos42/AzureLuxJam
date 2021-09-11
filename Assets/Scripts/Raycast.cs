@@ -27,6 +27,12 @@ public class Raycast : MonoBehaviour
         if (!Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
             return;
 
+        if (Input.GetMouseButtonDown(0)) {
+            if (hit.collider.tag == "Satellite") {
+                hit.collider.GetComponent<SatOrbit>().SetInfected(false);
+
+            }
+        }
 
         Renderer rend = hit.transform.GetComponent<Renderer>();
         MeshCollider meshCollider = hit.collider as MeshCollider;
