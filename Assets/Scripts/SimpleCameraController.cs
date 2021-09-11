@@ -74,6 +74,11 @@ namespace UnityTemplateProjects
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
         public bool invertY = false;
 
+        float phi = 0;
+        float theta = 0;
+        [SerializeField]
+        float distance = 2.5f;
+
 #if ENABLE_INPUT_SYSTEM
         InputAction movementAction;
         InputAction verticalMovementAction;
@@ -166,17 +171,34 @@ namespace UnityTemplateProjects
             // Exit Sample  
 
             if (Input.GetKey(KeyCode.A)) {
-                transform.Rotate(Vector3.up, Space.World);
-                transform.position = Quaternion.Euler(0, 1, 0) * transform.position;
+                // transform.Rotate(Vector3.up, Space.World);
+                // transform.position = Quaternion.Euler(0, 1, 0) * transform.position;
+                phi -= 1f;
             }
             if (Input.GetKey(KeyCode.D)) {
-                transform.Rotate(Vector3.down, Space.World);
-                transform.position = Quaternion.Euler(0, -1, 0) * transform.position;
+                // transform.Rotate(Vector3.down, Space.World);
+                // transform.position = Quaternion.Euler(0, -1, 0) * transform.position;
+                phi += 1f;
             }
+
+            if (Input.GetKey(KeyCode.W)) {
+                theta += 1f;
+            }
+
+            if (Input.GetKey(KeyCode.S)) {
+                    theta -= 1f;
+            }
+
+            theta = Mathf.Clamp(theta, -60, 60);
+
+            distance = Mathf.Clamp(distance * (1 - Input.mouseScrollDelta.y*0.02f), 1.3f, 3f);
 
             // Debug.Log(Input.mouseScrollDelta);
 
-            transform.position *= (1 - Input.mouseScrollDelta.y*0.05f);
+            // transform.position *= (1 - Input.mouseScrollDelta.y*0.05f);
+
+            transform.position = distance * new Vector3(Mathf.Cos(phi * Mathf.Deg2Rad) * Mathf.Cos(theta * Mathf.Deg2Rad), Mathf.Sin(theta * Mathf.Deg2Rad), Mathf.Sin(phi * Mathf.Deg2Rad) * Mathf.Cos(theta * Mathf.Deg2Rad));
+            transform.rotation = Quaternion.Euler(theta, 270-phi, 0);
 
             return;
 
