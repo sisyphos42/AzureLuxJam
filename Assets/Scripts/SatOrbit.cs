@@ -44,7 +44,7 @@ public class SatOrbit : MonoBehaviour
 
         //transform.position = Quaternion.AngleAxis(0.0001f * speed * Mathf.Rad2Deg, plane) * transform.position;
 
-        phi += 0.0001f * speed;
+        phi += 0.01f * speed * Time.deltaTime;
 
         coll = true;
 

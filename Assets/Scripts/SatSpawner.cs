@@ -225,8 +225,8 @@ public class SatSpawner : MonoBehaviour
     IEnumerator CountSats() {
         while (true) {
             int n = 0;
-            for (int i = 0; i < Ni * Nj; i++) {
-                if (sats[i].GetComponent<SatOrbit>().infected) {
+            foreach (var s in sats) {
+                if (s && s.GetComponent<SatOrbit>().infected) {
                     n++;
                 }
             }
