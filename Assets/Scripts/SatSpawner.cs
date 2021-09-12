@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using UnityEngine;
 using Zeptomoby.OrbitTools;
 
@@ -10,8 +12,8 @@ public class SatSpawner : MonoBehaviour
     [SerializeField]
     float altitude;
 
-    int Ni = 60;
-    int Nj = 40;
+    int Ni = 36;
+    int Nj = 63;
 
     [SerializeField]
     Material mat;
@@ -20,6 +22,7 @@ public class SatSpawner : MonoBehaviour
 
     public TextAsset satData;
     
+    public SatData d;
     
     [System.Serializable]
     public struct SatData {
@@ -45,16 +48,88 @@ public class SatSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SatData d = JsonUtility.FromJson<SatData>(satData.text.Replace("@", ""));
+        d = JsonUtility.FromJson<SatData>(satData.text.Replace("@", ""));
 
-        Debug.Log(d.context);
-        Debug.Log(d.id);
-        Debug.Log(d.type);
-        Debug.Log(d.totalItems);
-        Debug.Log(d.member[0].name);
-        Debug.Log(d.member[0].line1);
-        Debug.Log(d.member[0].line2);
+        // Debug.Log(d.context);
+        // Debug.Log(d.id);
+        // Debug.Log(d.type);
+        // Debug.Log(d.totalItems);
+        // Debug.Log(d.member[0].name);
+        // Debug.Log(d.member[0].line1);
+        // Debug.Log(d.member[0].line2);
 
+
+        // HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Format("http://api.openweathermap.org/data/2.5/weather?id={0}&APPID={1}", CityId, API_KEY));
+        //   HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        //   StreamReader reader = new StreamReader(response.GetResponseStream());
+        //   string jsonResponse = reader.ReadToEnd();
+        //   WeatherInfo info = JsonUtility.FromJson<WeatherInfo>(jsonResponse);
+        //   return info;
+
+        for (int i = 1; i <= 25 && false; i++) {
+
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://tle.ivanstanojevic.me/api/tle/?search=starlink&page={0}&page-size=100", i));
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        StreamReader reader = new StreamReader(response.GetResponseStream());
+        string json = reader.ReadToEnd().Replace("@", "");
+        SatData sd = JsonUtility.FromJson<SatData>(json);
+        //Debug.Log(json);
+
+        foreach (var x in sd.member) {
+            Tle tle = new Tle(x.name, x.line1, x.line2);
+            Satellite sa = new Satellite(tle);
+            try {
+                Eci e = sa.PositionEci(System.DateTime.Now);
+                Vector3 p = new Vector3((float)e.Position.X, (float)e.Position.Z, (float)e.Position.Y);
+                p = p.normalized * altitude;
+
+                GameObject nsat = Instantiate(satPrefab, p, Quaternion.identity);
+                nsat.transform.parent = transform;
+
+                SatOrbit so = nsat.GetComponent<SatOrbit>();
+                //so.plane = Quaternion.Euler((float)sa.Orbit.Inclination, 0, 0) * Quaternion.Euler(0, (float)sa.Orbit.RAAN * Mathf.Rad2Deg, 0) * Vector3.up;
+                so.plane = Quaternion.Euler(0, -(float)sa.Orbit.RAAN * Mathf.Rad2Deg, 0) * Quaternion.Euler(-(float)sa.Orbit.Inclination * Mathf.Rad2Deg + 180, 0, 0) * Vector3.up;
+                so.phase = 0;//(float)sa.Orbit.RAAN;
+
+                Debug.Log(string.Format("{0}: x: {1}, y: {2}, z: {3}, Inc: {4}, RAAN: {5}", x.name, p.x, p.y, p.z, sa.Orbit.Inclination*Mathf.Rad2Deg, sa.Orbit.RAAN*Mathf.Rad2Deg));
+
+
+            } catch {}
+        }
+
+        }
+
+        //return;
+
+        // for (int i = 1; i <= 25; i++) {
+        //     StreamReader sr = new StreamReader("Assets/Data/starlink/t" + i.ToString() + ".json");
+        //     SatData sd = JsonUtility.FromJson<SatData>(sr.ReadToEnd().Replace("@",""));
+        //     foreach (var x in sd.member) {
+        //         Tle tle = new Tle(x.name, x.line1, x.line2);
+        //         Satellite sa = new Satellite(tle);
+        //         //Eci e = sa.PositionEci(100);
+        //         Eci e;
+        //         try {
+        //             e = sa.PositionEci(System.DateTime.Now);
+        //             //Debug.Log(e.Position);
+        //             Vector3 p = new Vector3((float)e.Position.X, (float)e.Position.Z, (float)e.Position.Y);
+        //             p = p/6371 * altitude;
+
+        //             if (!float.IsNaN(p.x) && !float.IsNaN(p.y) && !float.IsNaN(p.z)) {
+
+        //                 GameObject nsat = Instantiate(satPrefab, p, Quaternion.identity);
+        //                 nsat.transform.parent = transform;
+        //             }
+        //         }
+        //         catch {}
+
+                
+        //     }
+        // }
+
+        //Debug.Log(sr.ReadToEnd());
+
+        //return;
 
         string str1 = "SGP4 Test";
         string str2 = "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0     8";
@@ -87,7 +162,7 @@ public class SatSpawner : MonoBehaviour
                 //rb.useGravity = false;
                 sat.transform.parent = transform;
                 SatOrbit so = sat.GetComponent<SatOrbit>();
-                so.plane = Quaternion.Euler(0, j * 9, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
+                so.plane = Quaternion.Euler(0, j * 360/Nj, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
                 so.phase = Mathf.Deg2Rad * ((360 * i/Ni) + 180);
                 so.altitude = altitude;// * (1 + (j*0.1f/Nj));
 
@@ -114,7 +189,7 @@ public class SatSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     IEnumerator CheckDistance() {

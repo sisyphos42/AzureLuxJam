@@ -20,6 +20,8 @@ public class SatOrbit : MonoBehaviour
     public bool infected = false;
     bool coll = false;
 
+    float _immuneTime = 0f;
+
     void OnEnable() {
         _mat_orig = GetComponent<Renderer>().material;
     }
@@ -40,9 +42,20 @@ public class SatOrbit : MonoBehaviour
         
         transform.position =  altitude * (Quaternion.FromToRotation(Vector3.up, plane) * Quaternion.Euler(0, -Mathf.Rad2Deg * (phase + phi), 0) * Vector3.right);
 
+        //transform.position = Quaternion.AngleAxis(0.0001f * speed * Mathf.Rad2Deg, plane) * transform.position;
+
+        if (Random.value < 0.000001f * (1 + Time.time/180f)) {
+            SetInfected(true);
+            Debug.Log("infect");
+        }
+
         phi += 0.0001f * speed;
 
         coll = true;
+
+        if (_immuneTime > 0) {
+            _immuneTime -= Time.deltaTime;
+        }
     }
 
     void OnCollisionEnter(Collision collision) {
@@ -57,7 +70,7 @@ public class SatOrbit : MonoBehaviour
         //Debug.Log(i.ToString() + " " + j.ToString() + " " + other.GetComponent<SatOrbit>().i.ToString() + " " + other.GetComponent<SatOrbit>().j.ToString());
         //GetComponent<Renderer>().material = mat;
         SatOrbit so = other.GetComponent<SatOrbit>();
-        so.SetInfected(true);
+        so?.SetInfected(true);
         // if (!so.infected) {
         //     so.infected = true;
         //      other.GetComponent<Renderer>().material = mat;
@@ -67,7 +80,9 @@ public class SatOrbit : MonoBehaviour
     }
 
     public void SetInfected(bool inf) {
+        //Debug.Log(string.Format("{0}, {1}, {2}", inf, infected, _immuneTime));
         if (infected == inf) return;
+        if (inf && _immuneTime > 0) return;
         infected = inf;
         if (inf) {
             GetComponent<Renderer>().material = mat;
@@ -78,5 +93,6 @@ public class SatOrbit : MonoBehaviour
         } else {
             GetComponent<Renderer>().material = _mat_orig;
         }
+        _immuneTime = 5f;
     }
 }
