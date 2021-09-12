@@ -12,8 +12,10 @@ public class SatSpawner : MonoBehaviour
     [SerializeField]
     float altitude;
 
-    int Ni = 36;
-    int Nj = 63;
+    const int Ni = 36;
+    const int Nj = 63;
+    public int N = Ni * Nj;
+    public int infected;
 
     [SerializeField]
     Material mat;
@@ -228,6 +230,7 @@ public class SatSpawner : MonoBehaviour
                     n++;
                 }
             }
+            infected = n;
             Debug.Log("infected: " + n);
 
             yield return new WaitForSeconds(1f);

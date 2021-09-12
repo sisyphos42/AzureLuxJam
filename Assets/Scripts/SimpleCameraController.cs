@@ -170,24 +170,25 @@ namespace UnityTemplateProjects
         void Update()
         {
             // Exit Sample  
+            float dphi = 0, dtheta = 0;
 
             if (Input.GetKey(KeyCode.A)) {
                 // transform.Rotate(Vector3.up, Space.World);
                 // transform.position = Quaternion.Euler(0, 1, 0) * transform.position;
-                phi -= 1f;
+                dphi = -1f;
             }
             if (Input.GetKey(KeyCode.D)) {
                 // transform.Rotate(Vector3.down, Space.World);
                 // transform.position = Quaternion.Euler(0, -1, 0) * transform.position;
-                phi += 1f;
+                dphi = 1f;
             }
 
             if (Input.GetKey(KeyCode.W)) {
-                theta += 1f;
+                dtheta = 1f;
             }
 
             if (Input.GetKey(KeyCode.S)) {
-                    theta -= 1f;
+                dtheta = -1f;
             }
 
             if (Input.GetMouseButtonDown(1)) {
@@ -196,10 +197,13 @@ namespace UnityTemplateProjects
 
             if (Input.GetMouseButton(1)) {
                 Vector3 dm = Input.mousePosition - _mousePos;
-                phi -= dm.x * 0.05f * distance;
-                theta -= dm.y * 0.05f * distance;
+                dphi = -dm.x * 0.05f * distance;
+                dtheta = -dm.y * 0.05f * distance;
                 _mousePos = Input.mousePosition;
             }
+
+            theta += dtheta * Time.deltaTime * 60;
+            phi += dphi * Time.deltaTime * 60;
 
             theta = Mathf.Clamp(theta, -60, 60);
 
