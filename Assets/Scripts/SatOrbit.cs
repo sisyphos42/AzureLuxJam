@@ -44,17 +44,19 @@ public class SatOrbit : MonoBehaviour
 
         //transform.position = Quaternion.AngleAxis(0.0001f * speed * Mathf.Rad2Deg, plane) * transform.position;
 
-        if (Random.value < 0.000001f * (1 + Time.time/180f)) {
-            SetInfected(true);
-            Debug.Log("infect");
-        }
-
         phi += 0.0001f * speed;
 
         coll = true;
 
         if (_immuneTime > 0) {
             _immuneTime -= Time.deltaTime;
+        }
+    }
+
+    void FixedUpdate() {
+        if (Random.value < 0.000001f * (1 + Time.time/180f)) {
+            SetInfected(true);
+            Debug.Log("infect");
         }
     }
 
