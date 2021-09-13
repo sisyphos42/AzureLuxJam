@@ -22,6 +22,8 @@ public class SatOrbit : MonoBehaviour
 
     float _immuneTime = 0f;
 
+    public GameObject sp;
+
     void OnEnable() {
         _mat_orig = GetComponent<Renderer>().material;
     }
@@ -54,10 +56,12 @@ public class SatOrbit : MonoBehaviour
     }
 
     void FixedUpdate() {
-        if (Random.value < 0.000001f * (1 + Time.time/180f)) {
-            SetInfected(true);
-            Debug.Log("infect");
-        }
+        // if (sp.GetComponent<SatSpawner>().infected < 10) {
+        //     if (Random.value < 0.000001f * (1 + Time.time/180f)) {
+        //         SetInfected(true);
+        //         Debug.Log("infect");
+        //     }
+        // }
     }
 
     void OnCollisionEnter(Collision collision) {

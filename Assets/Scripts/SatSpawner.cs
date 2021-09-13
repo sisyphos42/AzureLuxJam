@@ -12,13 +12,16 @@ public class SatSpawner : MonoBehaviour
     [SerializeField]
     float altitude;
 
-    const int Ni = 36;
-    const int Nj = 63;
-    public int N = Ni * Nj;
+    public int Ni;
+    public int Nj;
+    public int N {get => Ni*Nj;}
     public int infected;
 
     [SerializeField]
     Material mat;
+
+    [SerializeField]
+    Material mat2;
 
     GameObject[] sats;
 
@@ -164,8 +167,8 @@ public class SatSpawner : MonoBehaviour
                 //rb.useGravity = false;
                 sat.transform.parent = transform;
                 SatOrbit so = sat.GetComponent<SatOrbit>();
-                so.plane = Quaternion.Euler(0, j * 360/Nj, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
-                so.phase = Mathf.Deg2Rad * ((360 * i/Ni) + 180);
+                so.plane = Quaternion.Euler(0, i * 360/Ni, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
+                so.phase = Mathf.Deg2Rad * ((360 * j/Nj) + 180);
                 so.altitude = altitude;// * (1 + (j*0.1f/Nj));
 
                 so.i = i;
@@ -180,6 +183,11 @@ public class SatSpawner : MonoBehaviour
                     so.SetInfected(true);
                 }
 
+                if (i == 0) {
+                    //sat.transform.localScale *= 2;
+                    //sat.GetComponent<Renderer>().material = mat2;
+                }
+
                 sats[i*Nj + j] = sat;
             }
         }
@@ -192,6 +200,20 @@ public class SatSpawner : MonoBehaviour
     void Update()
     {
 
+    }
+
+    void FixedUpdate() {
+        if (infected > 5 + Mathf.FloorToInt(Time.time/60)) return;
+        if (Random.value < 0.000001f * N * (1 + Time.time/120f)) {
+            int i;
+            do {
+                i = Random.Range(0, sats.Length);
+            } while (sats[i].GetComponent<SatOrbit>().infected);
+            sats[i].GetComponent<SatOrbit>().SetInfected(true);
+
+            //SetInfected(true);
+            //Debug.Log("infect");
+        }
     }
 
     IEnumerator CheckDistance() {

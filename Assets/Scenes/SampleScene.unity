@@ -823,9 +823,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   satPrefab: {fileID: 1418652185860758220, guid: 4710dd0b62b7b6b4d9af99ce49e15982, type: 3}
   altitude: 1.1
-  N: 2268
+  Ni: 31
+  Nj: 77
   infected: 0
   mat: {fileID: 2100000, guid: 0c2a47876ef516f43a9d7b676f802314, type: 2}
+  mat2: {fileID: 2100000, guid: 26c4e3f3b7e4694489db527b555f7a0e, type: 2}
   satData: {fileID: 4900000, guid: ab1a88ded6cc2c145a5fe3377f6ff191, type: 3}
   d:
     context: 
