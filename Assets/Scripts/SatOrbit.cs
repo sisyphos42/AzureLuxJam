@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SatOrbit : MonoBehaviour
 {
+    public Controls controls;
     public float speed = 1f;
     public float altitude;
     public Vector3 plane;
@@ -72,6 +73,8 @@ public class SatOrbit : MonoBehaviour
     }
 
     void OnTriggerStay(Collider other) {
+        if (!controls.gameRunning) return;
+
         if (!coll) return;
         if (!infected) return;
         if (updated) return;

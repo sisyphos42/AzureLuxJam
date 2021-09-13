@@ -7,17 +7,17 @@ public class Raycast : MonoBehaviour
 {
     public GameObject buildingPreFab;
     public GameObject text;
-    TextMeshProUGUI _text;
     public Controls controls;
     // Start is called before the first frame update
     void Start()
     {
-        _text = text.GetComponent<TextMeshProUGUI>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!controls.gameRunning) return;
         // Ray ray = Camera.main.ScreenPointToRay(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
         // RaycastHit hit;
         // Collider coll = GetComponent<Collider>();
@@ -56,7 +56,7 @@ public class Raycast : MonoBehaviour
         pixelUV.y *= tex.height;
 
         Color pix = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-        _text.color = pix;
+        //_text.color = pix;
 
         if (Input.GetMouseButtonDown(0) && (pix.b < pix.r + pix.g)) {
             //GameObject b = Instantiate(buildingPreFab, hit.point, Quaternion.identity);

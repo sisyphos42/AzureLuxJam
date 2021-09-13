@@ -10,16 +10,22 @@ public class Controls : MonoBehaviour
     public MyText mt;
     public int money = 0;
     public GameObject gameover;
+    public GameObject leaderBoard;
     public GameObject score;
     public GameObject button;
+    public GameObject startscreen;
     public int ransom;
+    public bool gameRunning = false;
     int _startmoney;
-    bool _running = true;
+    bool _running = false;
+    float _moneytickTime;
+    bool _online = false;
     // Start is called before the first frame update
     void Start()
     {
+        _moneytickTime = Time.time;
         _startmoney = money;
-        StartCoroutine(MoneyTick());
+        //StartCoroutine(MoneyTick());
     }
 
     // Update is called once per frame
@@ -32,6 +38,12 @@ public class Controls : MonoBehaviour
 
         if (!_running) return;
 
+        if (Time.time - _moneytickTime > 1f) {
+            _moneytickTime = Time.time;
+            money--;
+            money -= sp.infected/20;
+        }
+
         if (money <= 0) {
             gameover.GetComponent<TextMeshProUGUI>().text = "Game Over";
             gameover.SetActive(true);
@@ -42,13 +54,7 @@ public class Controls : MonoBehaviour
         }
 
         if (sp.updated == sp.N) {
-            gameover.GetComponent<TextMeshProUGUI>().text = "You Won!";
-            gameover.SetActive(true);
-            button.SetActive(true);
-            score.SetActive(true);
-            score.GetComponent<TextMeshProUGUI>().text = string.Format("Score: {0}", money);
-            Time.timeScale = 0;
-            _running = false;
+            Win();
         }
     }
 
@@ -70,11 +76,57 @@ public class Controls : MonoBehaviour
 
     public void Restart() {
         money = _startmoney;
+        _moneytickTime = Time.time;
         gameover.SetActive(false);
         button.SetActive(false);
         score.SetActive(false);
         sp.Reset();
         Time.timeScale = 1f;
         _running = true;
+        gameRunning = true;
+    }
+
+    public void StartGame(int difficulty, bool online) {
+        switch (difficulty) {
+            case 0:
+                sp.Ni = 17;
+                sp.Nj = 43;
+                ransom = 5;
+                break;
+            case 1:
+                sp.Ni = 23;
+                sp.Nj = 59;
+                ransom = 2;
+                break;
+            case 2:
+                sp.Ni = 27;
+                sp.Nj = 61;
+                ransom = 1;
+                break;
+        }
+        _online = online;
+        Restart();
+    }
+
+    public void Win() {
+        if (_online) {
+            leaderBoard.SetActive(true);
+            leaderBoard.GetComponent<LeaderBoard>().Send(money);
+            //leaderBoard.GetComponent<LeaderBoard>().UpdateLeaderboard();
+        } else {
+            gameover.GetComponent<TextMeshProUGUI>().text = "You Won!";
+            gameover.SetActive(true);
+            button.SetActive(true);
+            score.SetActive(true);
+            score.GetComponent<TextMeshProUGUI>().text = string.Format("Score: {0}", money);
+        }
+        Time.timeScale = 0;
+        _running = false;
+    }
+
+    public void CloseLeaderboard() {
+        leaderBoard.SetActive(false);
+        startscreen.SetActive(true);
+        leaderBoard.GetComponent<LeaderBoard>().UpdateLeaderboard();
     }
 }

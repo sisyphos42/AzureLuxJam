@@ -8,6 +8,8 @@ using Zeptomoby.OrbitTools;
 public class SatSpawner : MonoBehaviour
 {
     [SerializeField]
+    Controls controls;
+    [SerializeField]
     GameObject satPrefab;
     [SerializeField]
     float altitude;
@@ -162,6 +164,10 @@ public class SatSpawner : MonoBehaviour
 
         _starttime = Time.time;
 
+        Reset();
+        return;
+
+
         sats = new GameObject[Ni * Nj];
 
         for (int i = 0; i < Ni; i++) {
@@ -174,6 +180,7 @@ public class SatSpawner : MonoBehaviour
                 so.plane = Quaternion.Euler(0, i * 360/Ni, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
                 so.phase = Mathf.Deg2Rad * ((360 * j/Nj) + 180);
                 so.altitude = altitude;// * (1 + (j*0.1f/Nj));
+                so.controls = controls;
 
                 so.i = i;
                 so.j = j;
@@ -207,6 +214,8 @@ public class SatSpawner : MonoBehaviour
     }
 
     void FixedUpdate() {
+        if (!controls.gameRunning) return;
+
         _threshold = 3 + Mathf.FloorToInt((Time.time - _starttime)/60f);
         if (infected > _threshold) return;
         if (Random.value < 0.000002f * N * (1 + (Time.time - _starttime)/120f)) {
@@ -263,22 +272,69 @@ public class SatSpawner : MonoBehaviour
             }
             infected = n;
             updated = u;
-            Debug.Log(string.Format("infected: {0}, updated: {1}, threshold: {2}", n, u, _threshold));
+            //Debug.Log(string.Format("infected: {0}, updated: {1}, threshold: {2}", n, u, _threshold));
 
             yield return new WaitForSeconds(0.1f);
         }
     }
 
     public void Reset() {
-        foreach (var s in sats) {
-            SatOrbit so = s.GetComponent<SatOrbit>();
-            so.phi = 0;
-            //so.updated = false;
-            so.Reset();
+        // foreach (var s in sats) {
+        //     SatOrbit so = s.GetComponent<SatOrbit>();
+        //     so.phi = 0;
+        //     //so.updated = false;
+        //     so.Reset();
+        // }
+        // infected = 0;
+        // updated = 0;
+        // _starttime = Time.time;
+        if (sats != null) {
+            foreach (var s in sats) {
+                Destroy(s);
+            }
         }
-        infected = 0;
-        updated = 0;
-        _starttime = Time.time;
+
+_starttime = Time.time;
+infected = 0;
+updated = 0;
+
+        sats = new GameObject[Ni * Nj];
+
+        for (int i = 0; i < Ni; i++) {
+            for (int j = 0; j < Nj; j++) {
+                GameObject sat = Instantiate(satPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                //Rigidbody rb = sat.AddComponent<Rigidbody>();
+                //rb.useGravity = false;
+                sat.transform.parent = transform;
+                SatOrbit so = sat.GetComponent<SatOrbit>();
+                so.plane = Quaternion.Euler(0, i * 360/Ni, 0) * Quaternion.Euler(60, 0, 0) * Vector3.up;
+                so.phase = Mathf.Deg2Rad * ((360 * j/Nj) + 180);
+                so.altitude = altitude;// * (1 + (j*0.1f/Nj));
+                so.controls = controls;
+
+                so.i = i;
+                so.j = j;
+
+                if (i == 0 && j == 0) {
+                    //sat.GetComponent<Collider>().isTrigger = false;
+                    //Rigidbody rb = sat.AddComponent<Rigidbody>();
+                    //rb.useGravity = false;
+                    //sat.GetComponent<Renderer>().material = mat;
+                    //so.infected = true;
+                    so.SetInfected(true);
+                }
+
+                if (i == 0) {
+                    //sat.transform.localScale *= 2;
+                    //sat.GetComponent<Renderer>().material = mat2;
+                }
+
+                sats[i*Nj + j] = sat;
+            }
+        }
+
+        StartCoroutine(CountSats());
+
     }
 
 }
