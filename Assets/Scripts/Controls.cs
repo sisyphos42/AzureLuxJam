@@ -12,6 +12,7 @@ public class Controls : MonoBehaviour
     public GameObject gameover;
     public GameObject score;
     public GameObject button;
+    public int ransom;
     int _startmoney;
     bool _running = true;
     // Start is called before the first frame update
@@ -58,12 +59,13 @@ public class Controls : MonoBehaviour
     IEnumerator MoneyTick() {
         while(true) {
             money--;
+            money -= sp.infected/20;
             yield return new WaitForSeconds(1f);
         }
     }
 
     public void PayRansom() {
-        money -= 10;
+        money -= ransom;
     }
 
     public void Restart() {
