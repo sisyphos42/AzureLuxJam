@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1418652185860758220}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.529, y: 0, z: 0}
-  m_LocalScale: {x: 0.004, y: 0.004, z: 0.004}
+  m_LocalScale: {x: 0.006, y: 0.006, z: 0.006}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -95,14 +95,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf330ee4203b8944fb3b0ed3ecab9100, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
+  speed: 2
   altitude: 1.5
   plane: {x: 0, y: 0, z: 0}
   phase: 0
   i: 0
   j: 0
   mat: {fileID: 2100000, guid: 0c2a47876ef516f43a9d7b676f802314, type: 2}
+  mat_upd: {fileID: 2100000, guid: 26c4e3f3b7e4694489db527b555f7a0e, type: 2}
   infected: 0
+  updated: 0
+  sp: {fileID: 0}
 --- !u!135 &574536642533490335
 SphereCollider:
   m_ObjectHideFlags: 0

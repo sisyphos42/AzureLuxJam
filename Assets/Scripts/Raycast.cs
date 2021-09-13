@@ -8,6 +8,7 @@ public class Raycast : MonoBehaviour
     public GameObject buildingPreFab;
     public GameObject text;
     TextMeshProUGUI _text;
+    public Controls controls;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,7 +32,11 @@ public class Raycast : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) {
             if (hit.collider.tag == "Satellite") {
                 Debug.Log("HEAL");
-                hit.collider.GetComponent<SatOrbit>().SetInfected(false);
+                SatOrbit so = hit.collider.GetComponent<SatOrbit>();
+                if (so.infected) {
+                    controls.PayRansom();
+                }
+                so.SetInfected(false);
 
             }
         }

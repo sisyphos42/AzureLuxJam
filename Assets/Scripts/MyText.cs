@@ -8,6 +8,7 @@ public class MyText : MonoBehaviour
     int _money = 0;
     int _healthy = 0;
     int _infected = 0;
+    int _updated = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +35,9 @@ public class MyText : MonoBehaviour
             case 2:
                 _infected = val;
                 break;
+            case 3:
+                _updated = val;
+                break;
         }
     }
 
@@ -42,7 +46,9 @@ public class MyText : MonoBehaviour
             transform.Find("Text").GetComponent<Text>().text = string.Format("{0}", _money);
             transform.Find("healthy").GetComponent<Text>().text = string.Format("{0}", _healthy);
             transform.Find("infected").GetComponent<Text>().text = string.Format("{0}", _infected);
-            yield return new WaitForSeconds(0.1f);
+            transform.Find("updated").GetComponent<Text>().text = string.Format("{0}", _updated);
+            //yield return new WaitForSeconds(0.1f);
+            yield return null;
         }
     }
 }

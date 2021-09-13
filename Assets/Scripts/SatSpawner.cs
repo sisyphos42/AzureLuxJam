@@ -16,6 +16,8 @@ public class SatSpawner : MonoBehaviour
     public int Nj;
     public int N {get => Ni*Nj;}
     public int infected;
+    public int updated;
+    float _starttime;
 
     [SerializeField]
     Material mat;
@@ -25,6 +27,7 @@ public class SatSpawner : MonoBehaviour
 
     GameObject[] sats;
 
+    int _threshold;
     public TextAsset satData;
     
     public SatData d;
@@ -157,6 +160,7 @@ public class SatSpawner : MonoBehaviour
 
         Debug.Log(eci.Position.Magnitude());
 
+        _starttime = Time.time;
 
         sats = new GameObject[Ni * Nj];
 
@@ -203,8 +207,9 @@ public class SatSpawner : MonoBehaviour
     }
 
     void FixedUpdate() {
-        if (infected > 5 + Mathf.FloorToInt(Time.time/60)) return;
-        if (Random.value < 0.000001f * N * (1 + Time.time/120f)) {
+        _threshold = 3 + Mathf.FloorToInt((Time.time - _starttime)/60f);
+        if (infected > _threshold) return;
+        if (Random.value < 0.000002f * N * (1 + (Time.time - _starttime)/120f)) {
             int i;
             do {
                 i = Random.Range(0, sats.Length);
@@ -247,16 +252,33 @@ public class SatSpawner : MonoBehaviour
     IEnumerator CountSats() {
         while (true) {
             int n = 0;
+            int u = 0;
             foreach (var s in sats) {
-                if (s && s.GetComponent<SatOrbit>().infected) {
-                    n++;
+                if (s) {
+                    if (s.GetComponent<SatOrbit>().infected)
+                        n++;
+                    if (s.GetComponent<SatOrbit>().updated)
+                        u++;
                 }
             }
             infected = n;
-            Debug.Log("infected: " + n);
+            updated = u;
+            Debug.Log(string.Format("infected: {0}, updated: {1}, threshold: {2}", n, u, _threshold));
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    public void Reset() {
+        foreach (var s in sats) {
+            SatOrbit so = s.GetComponent<SatOrbit>();
+            so.phi = 0;
+            //so.updated = false;
+            so.Reset();
+        }
+        infected = 0;
+        updated = 0;
+        _starttime = Time.time;
     }
 
 }

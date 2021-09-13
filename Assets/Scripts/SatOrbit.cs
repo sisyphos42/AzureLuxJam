@@ -9,15 +9,18 @@ public class SatOrbit : MonoBehaviour
     public Vector3 plane;
     public float phase;
 
-    float phi, theta;
+    public float phi, theta;
 
     public int i, j;
 
     [SerializeField]
     Material mat;
     Material _mat_orig;
+    [SerializeField]
+    Material mat_upd;
 
     public bool infected = false;
+    public bool updated = false;
     bool coll = false;
 
     float _immuneTime = 0f;
@@ -71,6 +74,7 @@ public class SatOrbit : MonoBehaviour
     void OnTriggerStay(Collider other) {
         if (!coll) return;
         if (!infected) return;
+        if (updated) return;
 
         //Debug.Log(other);
         //Debug.Log(i.ToString() + " " + j.ToString() + " " + other.GetComponent<SatOrbit>().i.ToString() + " " + other.GetComponent<SatOrbit>().j.ToString());
@@ -87,8 +91,9 @@ public class SatOrbit : MonoBehaviour
 
     public void SetInfected(bool inf) {
         //Debug.Log(string.Format("{0}, {1}, {2}", inf, infected, _immuneTime));
-        if (infected == inf) return;
-        if (inf && _immuneTime > 0) return;
+        //if (infected == inf) return;
+        //if (inf && (_immuneTime > 0 || updated)) return;
+        if (inf && updated) return;
         infected = inf;
         if (inf) {
             GetComponent<Renderer>().material = mat;
@@ -97,8 +102,20 @@ public class SatOrbit : MonoBehaviour
                 rb.useGravity = false;
             }
         } else {
-            GetComponent<Renderer>().material = _mat_orig;
+            GetComponent<Renderer>().material = mat_upd;
+            updated = true;
+            if (GetComponent<Rigidbody>() == null) {
+                Rigidbody rb = gameObject.AddComponent<Rigidbody>();
+                rb.useGravity = false;
+            }
         }
         _immuneTime = 5f;
+    }
+
+    public void Reset() {
+        phi = 0;
+        infected = false;
+        updated = false;
+        GetComponent<Renderer>().material = _mat_orig;
     }
 }
